@@ -8,7 +8,7 @@ fun part1CalibrationNumber(input: String): Int {
     return firstDigit * 10 + lastDigit
 }
 
-fun tokenizeInputWithOverlap(input: String): List<String> {
+fun tokenizeInputWithOverlap(input: String): Sequence<String> {
     val validTokens = listOf(
         "one", "two", "three", "four", "five",
         "six", "seven", "eight", "nine",
@@ -16,62 +16,29 @@ fun tokenizeInputWithOverlap(input: String): List<String> {
         "6", "7", "8", "9"
     )
 
-    val tokens = mutableListOf<String>()
-    var startIndex = 0
-    val endIndex = input.length
+    return sequence {
 
-    while (startIndex < endIndex) {
-        var foundToken = false
+        var startIndex = 0
+        val endIndex = input.length
 
-        for (i in startIndex..endIndex) {
-            val token = input.substring(startIndex, i)
-            if (validTokens.contains(token)) {
-                tokens.add(token)
-                startIndex += 1
-                foundToken = true
-                break
+        while (startIndex < endIndex) {
+            var foundToken = false
+
+            for (i in startIndex..endIndex) {
+                val token = input.substring(startIndex, i)
+                if (validTokens.contains(token)) {
+                    yield(token)
+                    startIndex += 1
+                    foundToken = true
+                    break
+                }
+            }
+
+            if (!foundToken) {
+                startIndex++
             }
         }
-
-        if (!foundToken) {
-            startIndex++
-        }
     }
-
-    return tokens
-}
-
-fun tokenizeInput(input: String): List<String> {
-    val validTokens = listOf(
-        "one", "two", "three", "four", "five",
-        "six", "seven", "eight", "nine",
-        "1", "2", "3", "4", "5",
-        "6", "7", "8", "9"
-    )
-
-    val tokens = mutableListOf<String>()
-    var startIndex = 0
-    var endIndex = input.length
-
-    while (startIndex < endIndex) {
-        var foundToken = false
-
-        for (i in startIndex..endIndex) {
-            val token = input.substring(startIndex, i)
-            if (validTokens.contains(token)) {
-                tokens.add(token)
-                startIndex = i
-                foundToken = true
-                break
-            }
-        }
-
-        if (!foundToken) {
-            startIndex++
-        }
-    }
-
-    return tokens
 }
 
 fun convertStringToNumber(input: String): Int {
@@ -99,8 +66,8 @@ fun convertStringToNumber(input: String): Int {
     return numberMapping[input]!!
 }
 fun part2CalibrationNumber(input: String): Int {
-    val tokens = tokenizeInputWithOverlap(input)
-    return convertStringToNumber(tokens.first()) * 10 + convertStringToNumber(tokens.last())
+    val tokens = tokenizeInputWithOverlap(input).map { convertStringToNumber(it) }
+    return tokens.first() * 10 + tokens.last()
 }
 
 fun main() {
@@ -109,9 +76,6 @@ fun main() {
     }
 
     fun part2(input: List<String>): Int {
-        for (item in input) {
-            part2CalibrationNumber(item).println()
-        }
         return input.sumOf {
             part2CalibrationNumber(it)
         }
@@ -125,6 +89,13 @@ fun main() {
     check(part2(testInput2) == 281)
 
     val input = readInput("Day01")
-    part1(input).println()
-    part2(input).println()
+
+    val part1Result = part1(input)
+    check(part1Result == 55712)
+
+    val part2Result = part2(input)
+    check(part2Result == 55413)
+
+    part1Result.println()
+    part2Result.println()
 }
