@@ -1,5 +1,11 @@
 name: Run Gradle Test on push
 on: push
+
+permissions:
+  id-token: write
+  contents: read
+  checks: write
+
 jobs:
   gradle:
     runs-on: ubuntu-latest
@@ -18,8 +24,9 @@ jobs:
 
       - name: Publish test results
         uses: dorny/test-reporter@v1
+        if: ${{ ! cancelled() }}
         with:
           name: Gradle Tests
-          path: build/test-results/test
+          path: build/test-results/test/*.xml
           reporter: java-junit
 
