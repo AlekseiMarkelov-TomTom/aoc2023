@@ -1,5 +1,10 @@
 name: Run Gradle Test on push
 on: push
+
+permissions:
+  id-token: write
+  contents: read
+
 jobs:
   gradle:
     runs-on: ubuntu-latest
