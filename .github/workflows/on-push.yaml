@@ -22,11 +22,9 @@ jobs:
       - name: Build and Test
         run: ./gradlew clean test
 
-      - name: list test results
-        run: ls -hla build/test-results/test
-
       - name: Publish test results
         uses: dorny/test-reporter@v1
+        if: ${{ ! cancelled() }}
         with:
           name: Gradle Tests
           path: build/test-results/test/*.xml
