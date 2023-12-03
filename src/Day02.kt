@@ -6,14 +6,14 @@ data class Game(val id: Int, val stones: Sequence<StoneSet>)
 
 fun parseGame(input: String): Game
 {
-    val gameInfo = input.split(":")
-    val gameId = gameInfo[0].trim().replace("Game ", "").toInt()
+    val gameInfo = input.splitToSequence(":").map { it.trim() }.iterator()
+    val gameId = gameInfo.next().replace("Game ", "").toInt()
 
-    val lines = gameInfo[1].trim().split(";")
+    val lines = gameInfo.next().splitToSequence(";").map { it.trim() }
     val stoneSets = lines.map { line ->
-        val stoneSetValues = line.trim().split(",")
+        val stoneSetValues = line.splitToSequence(",").map { it.trim() }
         val colors = stoneSetValues.associate { stoneSet ->
-            val (count, color) = stoneSet.trim().split(" ")
+            val (count, color) = stoneSet.split(" ")
             color to count.toInt()
         }
 
@@ -24,7 +24,7 @@ fun parseGame(input: String): Game
         StoneSet(red, green, blue)
     }
 
-    return Game(gameId, stoneSets.asSequence())
+    return Game(gameId, stoneSets)
 }
 
 fun isGamePossible(game: Game, set: StoneSet): Boolean {
