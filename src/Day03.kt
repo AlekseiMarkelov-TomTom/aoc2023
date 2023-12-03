@@ -35,10 +35,10 @@ fun parseSchematic(input: List<String>): EngineSchematic {
         var part: Part? = null
         for ((x, c) in line.withIndex()) {
             if (c.isDigit()) {
-                if (part != null) {
-                    part = Part(part.p, part.number * 10 + c.digitToInt())
+                part = if (part != null) {
+                    Part(part.p, part.number * 10 + c.digitToInt())
                 } else {
-                    part = Part(Point(x, y), c.digitToInt())
+                    Part(Point(x, y), c.digitToInt())
                 }
                 continue
             }
@@ -56,7 +56,6 @@ fun parseSchematic(input: List<String>): EngineSchematic {
             for (gridx in part.p.x until xSize) {
                 grid[y][gridx] = part
             }
-            part = null
         }
     }
     return EngineSchematic(symbols, grid, xSize, ySize)
@@ -92,34 +91,30 @@ fun neighbors(p: Point, xSize: Int, ySize: Int): Sequence<Point> {
 }
 
 fun getEngineParts(engineSchematic: EngineSchematic): Set<Part> {
-    val result = mutableSetOf<Part>()
-    for (symbol in engineSchematic.symbols.map { it.p }) {
-        result.addAll(neighbors(symbol, engineSchematic.xSize, engineSchematic.ySize).map() {
-            engineSchematic.grid[it.y][it.x]
-        }.filterNotNull())
-    }
-    return result
+    return engineSchematic.symbols.asSequence()
+        .flatMap { neighbors(it.p, engineSchematic.xSize, engineSchematic.ySize) }
+        .mapNotNull { engineSchematic.grid.get(it) }.toSet()
 }
 
 fun getGears(engineSchematic: EngineSchematic): Sequence<Int> {
-    return engineSchematic.symbols.filter {it.c == '*'}.map {
-        neighbors(it.p, engineSchematic.xSize, engineSchematic.ySize).map {
-            engineSchematic.grid.get(it)
-        }.filterNotNull().toSet()
-    }.filter { it.size == 2 }.map {
-        it.fold(1) {
-            product, it -> product * it.number
+    return engineSchematic.symbols.asSequence().filter { it.c == '*' }.map {
+        neighbors(it.p, engineSchematic.xSize, engineSchematic.ySize).mapNotNull { p ->
+            engineSchematic.grid.get(p)
+        }.toSet()
+    }.filter { it.size == 2 }.map { set ->
+        set.fold(1) { product, it ->
+            product * it.number
         }
-    }.asSequence()
+    }
 }
 fun main() {
     fun part1(input: List<String>): Int {
-        val schematic = parseSchematic(input);
+        val schematic = parseSchematic(input)
         return getEngineParts(schematic).sumOf { it.number }
     }
 
     fun part2(input: List<String>): Int {
-        val schematic = parseSchematic(input);
+        val schematic = parseSchematic(input)
         return getGears(schematic).sum()
     }
 
