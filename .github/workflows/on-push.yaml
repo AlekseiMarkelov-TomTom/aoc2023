@@ -16,9 +16,9 @@ jobs:
       - name: Build and Test
         run: ./gradlew clean test
 
-      - name: Archive Test Reports
-        uses: actions/upload-artifact@v2
+      - name: Publish test results
+        uses: dorny/test-reporter@v1
         with:
-          name: Test Reports
-          path: build/reports/tests/test
+          name: Gradle Tests
+          path: build/test-results/test
 
