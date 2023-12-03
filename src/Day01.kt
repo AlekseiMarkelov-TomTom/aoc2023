@@ -1,10 +1,7 @@
 fun part1CalibrationNumber(input: String): Int {
-    val digits = input.filter(Char::isDigit).map(Char::digitToInt)
-    if (digits.isEmpty()) throw RuntimeException("Invalid input")
-
+    val digits = input.asSequence().filter(Char::isDigit).map(Char::digitToInt).toList()
     val firstDigit = digits.first()
     val lastDigit = digits.last()
-
     return firstDigit * 10 + lastDigit
 }
 
