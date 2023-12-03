@@ -1,8 +1,9 @@
 
 
 data class Part(val x: Int, val y: Int, val number: Int)
+data class Symbol(val x: Int, val y: Int, val c: Char)
 typealias Grid = Array<Array<Part?>>
-data class EngineSchematic(val symbols: List<Pair<Int, Int>>, val grid: Grid, val xSize: Int, val ySize: Int) {
+data class EngineSchematic(val symbols: List<Symbol>, val grid: Grid, val xSize: Int, val ySize: Int) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
@@ -24,7 +25,7 @@ fun parseSchematic(input: List<String>): EngineSchematic {
     val ySize = input.size
     val xSize = input[0].length
     val grid: Grid = Array(ySize) { Array(xSize) { null } }
-    val symbols = mutableListOf<Pair<Int, Int>>()
+    val symbols = mutableListOf<Symbol>()
     for ((y, line) in input.withIndex())
     {
         var part: Part? = null
@@ -44,7 +45,7 @@ fun parseSchematic(input: List<String>): EngineSchematic {
                 part = null
             }
             if (c != '.') {
-                symbols.add(Pair(x, y))
+                symbols.add(Symbol(x, y, c))
             }
         }
         if (part != null) {
@@ -90,11 +91,23 @@ fun neighbors(x: Int, y: Int, xSize: Int, ySize: Int): Sequence<Pair<Int, Int>> 
 fun getEngineParts(engineSchematic: EngineSchematic): Set<Part> {
     val result = mutableSetOf<Part>()
     for (symbol in engineSchematic.symbols) {
-        result.addAll(neighbors(symbol.first, symbol.second, engineSchematic.xSize, engineSchematic.ySize).map() {
+        result.addAll(neighbors(symbol.x, symbol.y, engineSchematic.xSize, engineSchematic.ySize).map() {
             engineSchematic.grid[it.second][it.first]
         }.filterNotNull())
     }
     return result
+}
+
+fun getGears(engineSchematic: EngineSchematic): Sequence<Int> {
+    return engineSchematic.symbols.filter {it.c == '*'}.map {
+        neighbors(it.x, it.y, engineSchematic.xSize, engineSchematic.ySize).map {
+            engineSchematic.grid[it.second][it.first]
+        }.filterNotNull().toSet()
+    }.filter { it.size == 2 }.map {
+        it.fold(1) {
+            product, it -> product * it.number
+        }
+    }.asSequence()
 }
 fun main() {
     fun part1(input: List<String>): Int {
@@ -103,22 +116,23 @@ fun main() {
     }
 
     fun part2(input: List<String>): Int {
-        return input.size
+        val schematic = parseSchematic(input);
+        return getGears(schematic).sum()
     }
 
     // test if implementation meets criteria from the description, like:
     val testInput = readInput("Day03_test")
     check(part1(testInput) == 4361)
-    //check(part2(testInput) == 2286)
+    check(part2(testInput) == 467835)
 
     val input = readInput("Day03")
 
     val part1Result = part1(input)
-//    check(part1Result == 2727)
+    check(part1Result == 530495)
 
-//    val part2Result = part2(input)
-//    check(part2Result == 56580)
-//
+    val part2Result = part2(input)
+    check(part2Result == 80253814)
+
     part1Result.println()
-//    part2Result.println()
+    part2Result.println()
 }
