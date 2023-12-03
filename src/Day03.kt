@@ -110,7 +110,7 @@ fun getGears(engineSchematic: EngineSchematic): Sequence<Int> {
 fun main() {
     fun part1(input: List<String>): Int {
         val schematic = parseSchematic(input)
-        return getEngineParts(schematic).sumOf { it.number }
+        return getEngineParts(schematic).sumOf(Part::number)
     }
 
     fun part2(input: List<String>): Int {

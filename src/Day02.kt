@@ -4,8 +4,7 @@ data class StoneSet(val red: Int, val green: Int, val blue: Int)
 
 data class Game(val id: Int, val stones: Sequence<StoneSet>)
 
-fun parseGame(input: String): Game
-{
+fun parseGame(input: String): Game {
     val gameInfo = input.splitToSequence(":").map { it.trim() }.iterator()
     val gameId = gameInfo.next().replace("Game ", "").toInt()
 
@@ -32,7 +31,7 @@ fun isGamePossible(game: Game, set: StoneSet): Boolean {
 }
 
 fun powerSet(game: Game): Int {
-    val it = game.stones.fold(StoneSet(0, 0, 0)) { left, right ->
+    val it = game.stones.reduce { left, right ->
         StoneSet(max(left.red, right.red), max(left.green, right.green), max(left.blue, right.blue))
     }
     return it.red * it.green * it.blue
@@ -40,7 +39,7 @@ fun powerSet(game: Game): Int {
 
 fun main() {
     fun part1(input: List<String>): Int {
-        return input.map {parseGame(it) }.filter { isGamePossible(it, StoneSet(12,13,14)) }.sumOf { it.id }
+        return input.map { parseGame(it) }.filter { isGamePossible(it, StoneSet(12, 13, 14)) }.sumOf(Game::id)
     }
 
     fun part2(input: List<String>): Int {
