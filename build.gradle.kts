@@ -4,7 +4,7 @@ plugins {
 
 sourceSets {
     main {
-        kotlin.srcDir("src")
+        kotlin.srcDir("src/main/kotlin")
     }
 }
 
@@ -12,4 +12,8 @@ tasks {
     wrapper {
         gradleVersion = "8.5"
     }
+}
+
+dependencies {
+    testImplementation("junit:junit:4.13.2")
 }
