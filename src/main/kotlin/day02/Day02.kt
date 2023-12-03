@@ -41,20 +41,15 @@ fun powerSet(game: Game): Int {
     return it.red * it.green * it.blue
 }
 
+fun part1(input: List<String>): Int {
+    return input.map { parseGame(it) }.filter { isGamePossible(it, StoneSet(12, 13, 14)) }.sumOf(Game::id)
+}
+
+fun part2(input: List<String>): Int {
+    return input.map { parseGame(it) }.sumOf { powerSet(it) }
+}
+
 fun main() {
-    fun part1(input: List<String>): Int {
-        return input.map { parseGame(it) }.filter { isGamePossible(it, StoneSet(12, 13, 14)) }.sumOf(Game::id)
-    }
-
-    fun part2(input: List<String>): Int {
-        return input.map { parseGame(it) }.sumOf { powerSet(it) }
-    }
-
-    // test if implementation meets criteria from the description, like:
-    val testInput = readInput("Day02_test")
-    check(part1(testInput) == 8)
-    check(part2(testInput) == 2286)
-
     val input = readInput("Day02")
 
     val part1Result = part1(input)
