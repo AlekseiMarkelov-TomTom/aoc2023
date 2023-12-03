@@ -1,10 +1,14 @@
 package test.kotlin
 
+import day01.part1
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvSource
-import part1CalibrationNumber
-import part2CalibrationNumber
+import day01.part1CalibrationNumber
+import day01.part2
+import day01.part2CalibrationNumber
+import org.junit.jupiter.api.Test
+import readInput
 
 class Day01Test {
     @ParameterizedTest
@@ -27,5 +31,17 @@ class Day01Test {
     )
     fun testPart2CalibrationNumber(input: String, expectedResult: Int) {
         assertEquals(expectedResult, part2CalibrationNumber(input))
+    }
+
+    @Test
+    fun testPart1() {
+        val testInput = readInput("Day01_test")
+        assertEquals(142, part1(testInput))
+    }
+
+    @Test
+    fun testPart2() {
+        val testInput2 = readInput("Day01_test2")
+        assertEquals(281, part2(testInput2))
     }
 }
