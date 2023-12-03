@@ -1,12 +1,12 @@
-
-
 data class Point(val x: Int, val y: Int)
 data class Part(val p: Point, val number: Int)
 data class Symbol(val p: Point, val c: Char)
 typealias Grid = Array<Array<Part?>>
+
 fun Grid.get(p: Point): Part? {
     return this[p.y][p.x]
 }
+
 data class EngineSchematic(val symbols: List<Symbol>, val grid: Grid, val xSize: Int, val ySize: Int) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -30,8 +30,7 @@ fun parseSchematic(input: List<String>): EngineSchematic {
     val xSize = input[0].length
     val grid: Grid = Array(ySize) { Array(xSize) { null } }
     val symbols = mutableListOf<Symbol>()
-    for ((y, line) in input.withIndex())
-    {
+    for ((y, line) in input.withIndex()) {
         var part: Part? = null
         for ((x, c) in line.withIndex()) {
             if (c.isDigit()) {
@@ -65,7 +64,7 @@ fun neighbors(p: Point, xSize: Int, ySize: Int): Sequence<Point> {
     return sequence {
         if (p.x > 0) {
             if (p.y > 0) {
-                yield(Point(p.x-1,p.y-1))
+                yield(Point(p.x - 1, p.y - 1))
             }
             yield(Point(p.x - 1, p.y))
             if (p.y < ySize - 1) {
@@ -73,16 +72,16 @@ fun neighbors(p: Point, xSize: Int, ySize: Int): Sequence<Point> {
             }
         }
         if (p.y > 0) {
-            yield(Point(p.x,p.y-1))
+            yield(Point(p.x, p.y - 1))
         }
         if (p.y < ySize - 1) {
             yield(Point(p.x, p.y + 1))
         }
         if (p.x < xSize - 1) {
             if (p.y > 0) {
-                yield(Point(p.x + 1,p.y-1))
+                yield(Point(p.x + 1, p.y - 1))
             }
-            yield(Point(p.x+1, p.y))
+            yield(Point(p.x + 1, p.y))
             if (p.y < ySize - 1) {
                 yield(Point(p.x + 1, p.y + 1))
             }
@@ -107,6 +106,7 @@ fun getGears(engineSchematic: EngineSchematic): Sequence<Int> {
         }
     }
 }
+
 fun main() {
     fun part1(input: List<String>): Int {
         val schematic = parseSchematic(input)

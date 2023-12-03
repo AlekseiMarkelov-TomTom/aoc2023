@@ -10,10 +10,24 @@ fun part1CalibrationNumber(input: String): Int {
 
 fun tokenizeInputWithOverlap(input: String): Sequence<String> {
     val validTokens = listOf(
-        "one", "two", "three", "four", "five",
-        "six", "seven", "eight", "nine",
-        "1", "2", "3", "4", "5",
-        "6", "7", "8", "9"
+        "one",
+        "two",
+        "three",
+        "four",
+        "five",
+        "six",
+        "seven",
+        "eight",
+        "nine",
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "6",
+        "7",
+        "8",
+        "9"
     )
 
     return sequence {
@@ -65,6 +79,7 @@ fun convertStringToNumber(input: String): Int {
 
     return numberMapping[input]!!
 }
+
 fun part2CalibrationNumber(input: String): Int {
     val tokens = tokenizeInputWithOverlap(input).map { convertStringToNumber(it) }
     return tokens.first() * 10 + tokens.last()
