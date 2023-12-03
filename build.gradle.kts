@@ -6,6 +6,9 @@ sourceSets {
     main {
         kotlin.srcDir("src/main/kotlin")
     }
+    test {
+        kotlin.srcDir("src/test/kotlin")
+    }
 }
 
 tasks {
@@ -15,5 +18,10 @@ tasks {
 }
 
 dependencies {
-    testImplementation("junit:junit:4.13.2")
+    testImplementation("org.junit.jupiter:junit-jupiter:5.8.1")
+    testImplementation("org.junit.jupiter:junit-jupiter-params:5.8.1")
+}
+
+tasks.withType<Test> {
+    useJUnitPlatform()
 }
