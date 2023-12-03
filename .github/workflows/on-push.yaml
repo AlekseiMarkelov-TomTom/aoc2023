@@ -21,4 +21,5 @@ jobs:
         with:
           name: Gradle Tests
           path: build/test-results/test
+          reporter: java-junit
 
