@@ -1,8 +1,12 @@
 
 
-data class Part(val x: Int, val y: Int, val number: Int)
-data class Symbol(val x: Int, val y: Int, val c: Char)
+data class Point(val x: Int, val y: Int)
+data class Part(val p: Point, val number: Int)
+data class Symbol(val p: Point, val c: Char)
 typealias Grid = Array<Array<Part?>>
+fun Grid.get(p: Point): Part? {
+    return this[p.y][p.x]
+}
 data class EngineSchematic(val symbols: List<Symbol>, val grid: Grid, val xSize: Int, val ySize: Int) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -32,24 +36,24 @@ fun parseSchematic(input: List<String>): EngineSchematic {
         for ((x, c) in line.withIndex()) {
             if (c.isDigit()) {
                 if (part != null) {
-                    part = Part(part.x, part.y, part.number * 10 + c.digitToInt())
+                    part = Part(part.p, part.number * 10 + c.digitToInt())
                 } else {
-                    part = Part(x, y, c.digitToInt())
+                    part = Part(Point(x, y), c.digitToInt())
                 }
                 continue
             }
             if (part != null) {
-                for (gridx in part.x until x) {
+                for (gridx in part.p.x until x) {
                     grid[y][gridx] = part
                 }
                 part = null
             }
             if (c != '.') {
-                symbols.add(Symbol(x, y, c))
+                symbols.add(Symbol(Point(x, y), c))
             }
         }
         if (part != null) {
-            for (gridx in part.x until xSize) {
+            for (gridx in part.p.x until xSize) {
                 grid[y][gridx] = part
             }
             part = null
@@ -58,31 +62,30 @@ fun parseSchematic(input: List<String>): EngineSchematic {
     return EngineSchematic(symbols, grid, xSize, ySize)
 }
 
-fun neighbors(x: Int, y: Int, xSize: Int, ySize: Int): Sequence<Pair<Int, Int>> {
+fun neighbors(p: Point, xSize: Int, ySize: Int): Sequence<Point> {
     return sequence {
-        if (x > 0) {
-            if (y > 0) {
-                yield(Pair(x-1,y-1))
+        if (p.x > 0) {
+            if (p.y > 0) {
+                yield(Point(p.x-1,p.y-1))
             }
-            yield(Pair(x - 1, y))
-            if (y < ySize - 1) {
-                yield(Pair(x - 1, y + 1))
+            yield(Point(p.x - 1, p.y))
+            if (p.y < ySize - 1) {
+                yield(Point(p.x - 1, p.y + 1))
             }
         }
-        if (y > 0) {
-            yield(Pair(x,y-1))
+        if (p.y > 0) {
+            yield(Point(p.x,p.y-1))
         }
-        yield(Pair(x, y))
-        if (y < ySize - 1) {
-            yield(Pair(x, y + 1))
+        if (p.y < ySize - 1) {
+            yield(Point(p.x, p.y + 1))
         }
-        if (x < xSize - 1) {
-            if (y > 0) {
-                yield(Pair(x + 1,y-1))
+        if (p.x < xSize - 1) {
+            if (p.y > 0) {
+                yield(Point(p.x + 1,p.y-1))
             }
-            yield(Pair(x+1, y))
-            if (y < ySize - 1) {
-                yield(Pair(x + 1, y + 1))
+            yield(Point(p.x+1, p.y))
+            if (p.y < ySize - 1) {
+                yield(Point(p.x + 1, p.y + 1))
             }
         }
     }
@@ -90,9 +93,9 @@ fun neighbors(x: Int, y: Int, xSize: Int, ySize: Int): Sequence<Pair<Int, Int>> 
 
 fun getEngineParts(engineSchematic: EngineSchematic): Set<Part> {
     val result = mutableSetOf<Part>()
-    for (symbol in engineSchematic.symbols) {
-        result.addAll(neighbors(symbol.x, symbol.y, engineSchematic.xSize, engineSchematic.ySize).map() {
-            engineSchematic.grid[it.second][it.first]
+    for (symbol in engineSchematic.symbols.map { it.p }) {
+        result.addAll(neighbors(symbol, engineSchematic.xSize, engineSchematic.ySize).map() {
+            engineSchematic.grid[it.y][it.x]
         }.filterNotNull())
     }
     return result
@@ -100,8 +103,8 @@ fun getEngineParts(engineSchematic: EngineSchematic): Set<Part> {
 
 fun getGears(engineSchematic: EngineSchematic): Sequence<Int> {
     return engineSchematic.symbols.filter {it.c == '*'}.map {
-        neighbors(it.x, it.y, engineSchematic.xSize, engineSchematic.ySize).map {
-            engineSchematic.grid[it.second][it.first]
+        neighbors(it.p, engineSchematic.xSize, engineSchematic.ySize).map {
+            engineSchematic.grid.get(it)
         }.filterNotNull().toSet()
     }.filter { it.size == 2 }.map {
         it.fold(1) {
