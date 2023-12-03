@@ -1,4 +1,9 @@
-data class Point(val x: Int, val y: Int)
+data class Point(val x: Int, val y: Int) {
+    operator fun plus(other: Point): Point {
+        return Point(x + other.x, y + other.y)
+    }
+}
+
 data class Part(val p: Point, val number: Int)
 data class Symbol(val p: Point, val c: Char)
 typealias Grid = Array<Array<Part?>>
@@ -61,32 +66,9 @@ fun parseSchematic(input: List<String>): EngineSchematic {
 }
 
 fun neighbors(p: Point, xSize: Int, ySize: Int): Sequence<Point> {
-    return sequence {
-        if (p.x > 0) {
-            if (p.y > 0) {
-                yield(Point(p.x - 1, p.y - 1))
-            }
-            yield(Point(p.x - 1, p.y))
-            if (p.y < ySize - 1) {
-                yield(Point(p.x - 1, p.y + 1))
-            }
-        }
-        if (p.y > 0) {
-            yield(Point(p.x, p.y - 1))
-        }
-        if (p.y < ySize - 1) {
-            yield(Point(p.x, p.y + 1))
-        }
-        if (p.x < xSize - 1) {
-            if (p.y > 0) {
-                yield(Point(p.x + 1, p.y - 1))
-            }
-            yield(Point(p.x + 1, p.y))
-            if (p.y < ySize - 1) {
-                yield(Point(p.x + 1, p.y + 1))
-            }
-        }
-    }
+    return listOf(
+        Point(-1, -1), Point(-1, 0), Point(-1, 1), Point(0, -1), Point(0, 1), Point(1, -1), Point(1, 0), Point(1, 1)
+    ).asSequence().map { it + p }.filter { it.x in 0 until xSize && it.y in 0 until ySize }
 }
 
 fun getEngineParts(engineSchematic: EngineSchematic): Set<Part> {
