@@ -7,7 +7,6 @@ import org.junit.jupiter.params.provider.CsvSource
 import day01.part1CalibrationNumber
 import day01.part2
 import day01.part2CalibrationNumber
-import org.junit.jupiter.api.Test
 import readInput
 
 class Day01Test {
