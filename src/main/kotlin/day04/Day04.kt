@@ -14,11 +14,11 @@ data class Ticket(val winningNumbers: List<Int>, val numbers: List<Int>) {
 }
 
 fun parseTicket(input: String): Ticket {
-    val sequences = input.split(':')[1].splitToSequence('|').iterator()
-    val winningsNumbers =
-        sequences.next().splitToSequence(' ').filter { it.trim().isNotEmpty() }.map { it.trim().toInt() }.toList()
-    val numbers =
-        sequences.next().splitToSequence(' ').filter { it.trim().isNotEmpty() }.map { it.trim().toInt() }.toList()
+    val sequences = input.splitToSequence(':').drop(1).first().splitToSequence('|').map { numbers ->
+        numbers.splitToSequence(' ').map { it.trim() }.filter { it.isNotEmpty() }.map { it.toInt() }.toList()
+    }.iterator()
+    val winningsNumbers = sequences.next()
+    val numbers = sequences.next()
     return Ticket(winningsNumbers, numbers)
 }
 
