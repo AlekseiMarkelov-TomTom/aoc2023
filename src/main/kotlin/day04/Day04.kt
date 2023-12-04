@@ -4,8 +4,6 @@ import println
 import readInput
 import kotlin.math.min
 
-import kotlin.math.pow
-
 data class Ticket(val winningNumbers: List<Int>, val numbers: List<Int>) {
     fun wins(): Int {
         val winningSet = winningNumbers.toSet()
@@ -37,8 +35,8 @@ fun countPoints(ticket: Ticket): Int {
 
 fun processTickets(tickets: List<Ticket>): Int {
     val ticketCounts = Array(tickets.size) { 1 }
-    for (index in tickets.indices) {
-        val wonCards = tickets[index].wins()
+    for ((index, ticket) in tickets.withIndex()) {
+        val wonCards = ticket.wins()
         for (j in index + 1 until min(tickets.size, index + 1 + wonCards)) {
             ticketCounts[j] += ticketCounts[index]
         }
