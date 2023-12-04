@@ -99,13 +99,6 @@ fun part2(input: List<String>): Int {
 
 fun main() {
     val input = readInput("Day01")
-
-    val part1Result = part1(input)
-    check(part1Result == 55712)
-
-    val part2Result = part2(input)
-    check(part2Result == 55413)
-
-    part1Result.println()
-    part2Result.println()
+    part1(input).println()
+    part2(input).println()
 }

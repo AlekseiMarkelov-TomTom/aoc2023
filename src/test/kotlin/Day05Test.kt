@@ -1,19 +1,28 @@
 package test.kotlin
 
-import org.junit.jupiter.api.Assertions
-import org.junit.jupiter.api.Test
+import day05.part1
+import day05.part2
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.CsvSource
 import readInput
 
 class Day05Test {
-    @Test
-    fun part1() {
-        val testInput = readInput("Day05_test")
-        Assertions.assertEquals(0, day05.part1(testInput))
+    @ParameterizedTest
+    @CsvSource(
+        "Day05_test, 0",
+        "Day05, 0"
+    )
+    fun testPart1(inputFileName: String, expectedResult: Int) {
+        assertEquals(expectedResult, part1(readInput(inputFileName)))
     }
 
-    @Test
-    fun part2() {
-        val testInput = readInput("Day05_test")
-        Assertions.assertEquals(0, day05.part2(testInput))
+    @ParameterizedTest
+    @CsvSource(
+        "Day05_test, 0",
+        "Day05, 0"
+    )
+    fun testPart2(inputFileName: String, expectedResult: Int) {
+        assertEquals(expectedResult, part2(readInput(inputFileName)))
     }
 }

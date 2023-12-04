@@ -94,30 +94,18 @@ fun getGears(engineSchematic: EngineSchematic): Sequence<Int> {
     }
 }
 
+fun part1(input: List<String>): Int {
+    val schematic = parseSchematic(input)
+    return getEngineParts(schematic).sumOf(Part::number)
+}
+
+fun part2(input: List<String>): Int {
+    val schematic = parseSchematic(input)
+    return getGears(schematic).sum()
+}
+
 fun main() {
-    fun part1(input: List<String>): Int {
-        val schematic = parseSchematic(input)
-        return getEngineParts(schematic).sumOf(Part::number)
-    }
-
-    fun part2(input: List<String>): Int {
-        val schematic = parseSchematic(input)
-        return getGears(schematic).sum()
-    }
-
-    // test if implementation meets criteria from the description, like:
-    val testInput = readInput("Day03_test")
-    check(part1(testInput) == 4361)
-    check(part2(testInput) == 467835)
-
     val input = readInput("Day03")
-
-    val part1Result = part1(input)
-    check(part1Result == 530495)
-
-    val part2Result = part2(input)
-    check(part2Result == 80253814)
-
-    part1Result.println()
-    part2Result.println()
+    part1(input).println()
+    part2(input).println()
 }

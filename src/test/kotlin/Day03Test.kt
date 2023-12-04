@@ -1,17 +1,17 @@
 package test.kotlin
 
-import day02.part1
-import day02.part2
+import day03.part1
+import day03.part2
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvSource
 import readInput
 
-class Day02Test {
+class Day03Test {
     @ParameterizedTest
     @CsvSource(
-        "Day02_test, 8",
-        "Day02, 2727"
+        "Day03_test, 4361",
+        "Day03, 530495"
     )
     fun testPart1(inputFileName: String, expectedResult: Int) {
         assertEquals(expectedResult, part1(readInput(inputFileName)))
@@ -19,8 +19,8 @@ class Day02Test {
 
     @ParameterizedTest
     @CsvSource(
-        "Day02_test, 2286",
-        "Day02, 56580"
+        "Day03_test, 467835",
+        "Day03, 80253814"
     )
     fun testPart2(inputFileName: String, expectedResult: Int) {
         assertEquals(expectedResult, part2(readInput(inputFileName)))

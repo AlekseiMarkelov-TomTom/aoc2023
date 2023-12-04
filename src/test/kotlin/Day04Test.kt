@@ -1,8 +1,9 @@
 package test.kotlin
 
 import day04.parseTicket
+import day04.part1
+import day04.part2
 import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvSource
 import readInput
@@ -21,15 +22,21 @@ class Day04Test {
         assertEquals(expectedScore, parseTicket(input).wins())
     }
 
-    @Test
-    fun part1() {
-        val testInput = readInput("Day04_test")
-        assertEquals(13, day04.part1(testInput))
+    @ParameterizedTest
+    @CsvSource(
+        "Day04_test, 13",
+        "Day04, 25571"
+    )
+    fun testPart1(inputFileName: String, expectedResult: Int) {
+        assertEquals(expectedResult, part1(readInput(inputFileName)))
     }
 
-    @Test
-    fun part2() {
-        val testInput = readInput("Day04_test")
-        assertEquals(30, day04.part2(testInput))
+    @ParameterizedTest
+    @CsvSource(
+        "Day04_test, 30",
+        "Day04, 8805731"
+    )
+    fun testPart2(inputFileName: String, expectedResult: Int) {
+        assertEquals(expectedResult, part2(readInput(inputFileName)))
     }
 }

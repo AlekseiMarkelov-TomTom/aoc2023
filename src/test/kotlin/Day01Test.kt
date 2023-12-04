@@ -33,15 +33,21 @@ class Day01Test {
         assertEquals(expectedResult, part2CalibrationNumber(input))
     }
 
-    @Test
-    fun testPart1() {
-        val testInput = readInput("Day01_test")
-        assertEquals(142, part1(testInput))
+    @ParameterizedTest
+    @CsvSource(
+        "Day01_test, 142",
+        "Day01, 55712"
+    )
+    fun testPart1(inputFileName: String, expectedResult: Int) {
+        assertEquals(expectedResult, part1(readInput(inputFileName)))
     }
 
-    @Test
-    fun testPart2() {
-        val testInput2 = readInput("Day01_test2")
-        assertEquals(281, part2(testInput2))
+    @ParameterizedTest
+    @CsvSource(
+        "Day01_test2, 281",
+        "Day01, 55413"
+    )
+    fun testPart2(inputFileName: String, expectedResult: Int) {
+        assertEquals(expectedResult, part2(readInput(inputFileName)))
     }
 }

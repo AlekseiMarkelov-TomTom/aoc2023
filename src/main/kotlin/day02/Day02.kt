@@ -51,13 +51,6 @@ fun part2(input: List<String>): Int {
 
 fun main() {
     val input = readInput("Day02")
-
-    val part1Result = part1(input)
-    check(part1Result == 2727)
-
-    val part2Result = part2(input)
-    check(part2Result == 56580)
-
-    part1Result.println()
-    part2Result.println()
+    part1(input).println()
+    part2(input).println()
 }
