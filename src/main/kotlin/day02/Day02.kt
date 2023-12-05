@@ -42,11 +42,11 @@ fun powerSet(game: Game): Int {
 }
 
 fun part1(input: List<String>): Int {
-    return input.map { parseGame(it) }.filter { isGamePossible(it, StoneSet(12, 13, 14)) }.sumOf(Game::id)
+    return input.asSequence().map { parseGame(it) }.filter { isGamePossible(it, StoneSet(12, 13, 14)) }.sumOf(Game::id)
 }
 
 fun part2(input: List<String>): Int {
-    return input.map { parseGame(it) }.sumOf { powerSet(it) }
+    return input.asSequence().map { parseGame(it) }.sumOf { powerSet(it) }
 }
 
 fun main() {

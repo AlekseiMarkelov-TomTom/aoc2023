@@ -45,7 +45,7 @@ fun processTickets(tickets: List<Ticket>): Int {
 }
 
 fun part1(input: List<String>): Int {
-    return input.map { parseTicket(it) }.sumOf { countPoints(it) }
+    return input.asSequence().map { parseTicket(it) }.sumOf { countPoints(it) }
 }
 
 fun part2(input: List<String>): Int {

@@ -12,8 +12,7 @@ import readInput
 class Day05Test {
     @ParameterizedTest
     @CsvSource(
-        "Day05_test, 35",
-        "Day05, 551761867"
+        "Day05_test, 35", "Day05, 551761867"
     )
     fun testPart1(inputFileName: String, expectedResult: Long) {
         assertEquals(expectedResult, part1(readInput(inputFileName)))
@@ -21,8 +20,7 @@ class Day05Test {
 
     @ParameterizedTest
     @CsvSource(
-        "Day05_test, 46",
-        "Day05, 57451709"
+        "Day05_test, 46", "Day05, 57451709"
     )
     fun testPart2(inputFileName: String, expectedResult: Long) {
         assertEquals(expectedResult, part2(readInput(inputFileName)))
@@ -31,7 +29,7 @@ class Day05Test {
     @Test
     fun testPart2SingleLocation() {
         val almanac = parseInput(readInput("Day05_test"))
-        val inputRange = LongRange(82, 82);
+        val inputRange = LongRange(82, 82)
         val soil = almanac.seedToSoil.transform(inputRange)
         assertEquals(84, soil.first().first)
         val fertilizer = soil.flatMap { almanac.soilToFertilizer.transform(it) }
