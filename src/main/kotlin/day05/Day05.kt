@@ -49,15 +49,20 @@ data class Mapping(val mappings: List<SingleRange>) {
 }
 
 data class Almanac(
-    val seeds: Sequence<Long>,
-    val seedToSoil: Mapping,
-    val soilToFertilizer: Mapping,
-    val fertilizerToWater: Mapping,
-    val waterToLight: Mapping,
-    val lightToTemperature: Mapping,
-    val temperatureToHumidity: Mapping,
-    val humidityToLocation: Mapping
-)
+    val seeds: Sequence<Long>, val mappings: List<Mapping>
+) {
+    fun transform(input: Long): Long {
+        return mappings.fold(input) { acc, mapping ->
+            mapping.transform(acc)
+        }
+    }
+
+    fun transform(input: Sequence<LongRange>): Sequence<LongRange> {
+        return mappings.fold(input) { acc, mapping ->
+            acc.flatMap { mapping.transform(it) }
+        }
+    }
+}
 
 fun parseSingleRange(input: String): SingleRange {
     val iterator = input.splitToSequence(' ').map { it.toLong() }.iterator()
@@ -84,40 +89,24 @@ fun parseInput(input: List<String>): Almanac {
     val iterator = input.iterator()
     val seeds = iterator.next().splitToSequence(':').drop(1).first().trim().splitToSequence(' ').map { it.toLong() }
     iterator.next()
-    val seedToSoil = parseMapping(iterator)
-    val soilToFertilizer = parseMapping(iterator)
-    val fertilizerToWater = parseMapping(iterator)
-    val waterToLight = parseMapping(iterator)
-    val lightToTemperature = parseMapping(iterator)
-    val temperatureToHumidity = parseMapping(iterator)
-    val humidityToLocation = parseMapping(iterator)
+    val mappings = mutableListOf<Mapping>()
+    while (iterator.hasNext()) {
+        mappings.add(parseMapping(iterator))
+    }
     return Almanac(
-        seeds,
-        seedToSoil,
-        soilToFertilizer,
-        fertilizerToWater,
-        waterToLight,
-        lightToTemperature,
-        temperatureToHumidity,
-        humidityToLocation
+        seeds, mappings
     )
 }
 
 fun part1(input: List<String>): Long {
     val almanac = parseInput(input)
-    return almanac.seeds.map { almanac.seedToSoil.transform(it) }.map { almanac.soilToFertilizer.transform(it) }
-        .map { almanac.fertilizerToWater.transform(it) }.map { almanac.waterToLight.transform(it) }
-        .map { almanac.lightToTemperature.transform(it) }.map { almanac.temperatureToHumidity.transform(it) }
-        .minOfOrNull { almanac.humidityToLocation.transform(it) }!!
+    return almanac.seeds.map { almanac.transform(it) }.minOrNull()!!
 }
 
 fun part2(input: List<String>): Long {
     val almanac = parseInput(input)
-    return almanac.seeds.chunked(2) { (first, length) -> LongRange(first, first + length - 1) }
-        .flatMap { almanac.seedToSoil.transform(it) }.flatMap { almanac.soilToFertilizer.transform(it) }
-        .flatMap { almanac.fertilizerToWater.transform(it) }.flatMap { almanac.waterToLight.transform(it) }
-        .flatMap { almanac.lightToTemperature.transform(it) }.flatMap { almanac.temperatureToHumidity.transform(it) }
-        .flatMap { almanac.humidityToLocation.transform(it) }.minOfOrNull { it.first }!!
+    return almanac.transform(almanac.seeds.chunked(2) { (first, length) -> LongRange(first, first + length - 1) })
+        .minOfOrNull { it.first }!!
 }
 
 fun main() {
