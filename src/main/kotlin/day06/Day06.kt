@@ -2,6 +2,9 @@ package day06
 
 import println
 import readInput
+import kotlin.math.ceil
+import kotlin.math.floor
+import kotlin.math.sqrt
 
 data class Game(val time: Long, val distance: Long)
 
@@ -22,7 +25,10 @@ fun parseInput2(input: List<String>): Sequence<Game> {
 }
 
 fun waysToWin(game: Game): Int {
-    return (0..game.time).count { it * (game.time - it) > game.distance }
+    val d = (game.time * game.time - 4 * game.distance).toDouble()
+    val x1 = (-game.time - sqrt(d)) / 2
+    val x2 = (-game.time + sqrt(d)) / 2
+    return (ceil(x2) - floor(x1 + 1)).toInt()
 }
 
 fun part1(input: List<String>): Long {
