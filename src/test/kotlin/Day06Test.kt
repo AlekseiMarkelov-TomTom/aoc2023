@@ -10,7 +10,7 @@ import readInput
 class Day06Test {
     @ParameterizedTest
     @CsvSource(
-        "Day06_test, 0", "Day06, 0"
+        "Day06_test, 288", "Day06, 0"
     )
     fun testPart1(inputFileName: String, expectedResult: Int) {
         assertEquals(expectedResult, part1(readInput(inputFileName)))
