@@ -24,12 +24,4 @@ class Day07Test {
     fun testPart2(inputFileName: String, expectedResult: Long) {
         Assertions.assertEquals(expectedResult, part2(readInput(inputFileName)))
     }
-
-    @ParameterizedTest
-    @CsvSource(
-        "AAT4J, OnePair"
-    )
-    fun testTyping(input: String, expectedType: String) {
-        Assertions.assertEquals(expectedType, day07.Hand(input, 1).type().name)
-    }
 }

@@ -46,7 +46,11 @@ fun cardValueWithJoker(card: Char) = cardValuesWithJoker[card]!!
 
 
 data class Hand(val cards: String, val bid: Long) : Comparable<Hand> {
-    fun type(): HandType {
+    private val type: HandType
+    init {
+        type = getType()
+    }
+    private fun getType(): HandType {
         return when (cards.groupingBy { it }.eachCount().values.sortedDescending()) {
             listOf(5) -> HandType.FiveOfAKind
             listOf(4, 1) -> HandType.FourOfAKind
@@ -59,7 +63,7 @@ data class Hand(val cards: String, val bid: Long) : Comparable<Hand> {
     }
 
     override fun compareTo(other: Hand): Int {
-        val typeComparison = type().value.compareTo(other.type().value)
+        val typeComparison = type.value.compareTo(other.type.value)
         if (typeComparison != 0) {
             return typeComparison
         }
@@ -74,7 +78,11 @@ data class Hand(val cards: String, val bid: Long) : Comparable<Hand> {
 }
 
 data class HandWithJoker(val cards: String, val bid: Long) : Comparable<HandWithJoker> {
-    fun type(): HandType {
+    private val type: HandType
+    init {
+        type = getType()
+    }
+    private fun getType(): HandType {
         val counts = cards.groupingBy { it }.eachCount()
         val jokersCount = counts.getOrDefault('J', 0)
         if (jokersCount == 5) {
@@ -94,7 +102,7 @@ data class HandWithJoker(val cards: String, val bid: Long) : Comparable<HandWith
     }
 
     override fun compareTo(other: HandWithJoker): Int {
-        val typeComparison = type().value.compareTo(other.type().value)
+        val typeComparison = type.value.compareTo(other.type.value)
         if (typeComparison != 0) {
             return typeComparison
         }
@@ -114,18 +122,11 @@ fun parseInput(input: List<String>): List<Hand> {
 
 fun part1(input: List<String>): Long {
     val sorted = parseInput(input).sorted()
-    for (hand in sorted) {
-        println("%s %d - %s".format(hand.cards, hand.bid, hand.type().name))
-    }
     return sorted.asSequence().mapIndexed{ index, hand -> (index + 1) * hand.bid }.sum()
 }
 
 fun part2(input: List<String>): Long {
     val sorted = input.asSequence().map { val (cards, bidString) = it.split(' '); HandWithJoker(cards, bidString.toLong()) }.toList().sorted()
-
-    for (hand in sorted) {
-        println("%s %d - %s".format(hand.cards, hand.bid, hand.type().name))
-    }
     return sorted.asSequence().mapIndexed{ index, hand -> (index + 1) * hand.bid }.sum()
 }
 
