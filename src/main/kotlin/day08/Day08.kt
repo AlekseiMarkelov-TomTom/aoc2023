@@ -48,6 +48,7 @@ fun part1(input: List<String>): Long {
 }
 
 typealias FactorsMap = Map<Long, Int>
+
 fun factorize(input: Long): FactorsMap {
     return sequence {
         var n = input
@@ -66,8 +67,7 @@ fun factorize(input: Long): FactorsMap {
     }.groupingBy { it }.eachCount().toMap()
 }
 
-fun maxFactors(acc: FactorsMap, it: FactorsMap): FactorsMap
-{
+fun maxFactors(acc: FactorsMap, it: FactorsMap): FactorsMap {
     return acc.keys.union(it.keys).associateWith { key -> maxOf(acc.getOrDefault(key, 0), it.getOrDefault(key, 0)) }
 }
 
@@ -75,7 +75,9 @@ fun part2(input: List<String>): Long {
     val task = parseInput(input)
     val steps =
         task.connections.keys.filter { it.endsWith('A') }.map { stepsInTask(task, it) { node -> node.endsWith('Z') } }
-    return steps.map { factorize(it) }.reduce{acc, it -> maxFactors(acc, it)}.entries.fold(1) { acc, it -> acc * it.key.toDouble().pow(it.value).toLong() }
+    return steps.map { factorize(it) }.reduce { acc, it -> maxFactors(acc, it) }.entries.fold(1) { acc, it ->
+        acc * it.key.toDouble().pow(it.value).toLong()
+    }
 }
 
 fun main() {

@@ -3,14 +3,12 @@ package day09
 import println
 import readInput
 
-fun nextValue(input: List<Long>): Long
-{
+fun nextValue(input: List<Long>): Long {
     if (input.all { it == 0L }) return 0
     return nextValue(input.asSequence().windowed(2).map { it[1] - it[0] }.toList()) + input.last()
 }
 
-fun previousValue(input: List<Long>): Long
-{
+fun previousValue(input: List<Long>): Long {
     if (input.all { it == 0L }) return 0
     return input.first() - previousValue(input.asSequence().windowed(2).map { it[1] - it[0] }.toList())
 
