@@ -97,7 +97,8 @@ tailrec fun pathToStartingPoint(grid: Grid, point: Point, direction: Direction, 
     if (newPointType == PointType.StartingPosition) {
         return path + newPoint
     }
-    val newDirection = Direction.entries.filterNot { it == complementaryDirection(direction) }.firstOrNull { compatibleOrigins[it]!!.contains(grid.get(newPoint))}
+    val newDirection = Direction.entries.filterNot { it == complementaryDirection(direction) }
+        .firstOrNull { compatibleOrigins[it]!!.contains(grid.get(newPoint)) }
         ?: return null
     return pathToStartingPoint(grid, newPoint, newDirection, path + newPoint)
 }
@@ -105,11 +106,99 @@ tailrec fun pathToStartingPoint(grid: Grid, point: Point, direction: Direction, 
 
 fun part1(input: List<String>): Long {
     val grid = Grid(input)
-    return Direction.entries.asSequence().map { pathToStartingPoint(grid, grid.startingPoint, it, listOf()) }.filterNotNull().first().count().toLong() / 2
+    return Direction.entries.asSequence().map { pathToStartingPoint(grid, grid.startingPoint, it, listOf()) }
+        .filterNotNull().first().count().toLong() / 2
+}
+
+fun innerStrides(line: List<Pair<Point, PointType>>): Sequence<Pair<Int, Int>> {
+    return sequence {
+        var i = 0
+        var prevX: Int? = null
+        var inPolygon = false
+        while (i < line.size) {
+            val leftBoundaryType = line[i].second
+            val leftBoundaryX = line[i].first.x
+            if (leftBoundaryType == PointType.UD) {
+
+                if (prevX != null) {
+                    if (inPolygon) {
+                        println("line ${line[i].first.y} emitting $prevX to $leftBoundaryX")
+                        yield(Pair(prevX, leftBoundaryX))
+                    }
+                }
+                prevX = leftBoundaryX
+                inPolygon = !inPolygon
+                println("inPolygon = $inPolygon")
+                ++i
+                continue
+
+            }
+            //skipping over
+            while (line[++i].second == PointType.LR) continue
+            val rightBoundaryType = line[i].second
+            val rightBoundaryX = line[i].first.x
+            when (Pair(leftBoundaryType, rightBoundaryType)) {
+                Pair(PointType.UR, PointType.LD), Pair(PointType.DR, PointType.UL) -> {
+                    if (prevX != null) {
+                        if (inPolygon) {
+                            println("line ${line[i].first.y} emitting $prevX to $leftBoundaryX")
+                            yield(Pair(prevX, leftBoundaryX))
+                        }
+                    }
+                    prevX = rightBoundaryX
+                    inPolygon = !inPolygon
+                    println("inPolygon = $inPolygon")
+                    ++i
+                    continue
+                }
+                else -> {
+                    if (prevX != null) {
+                        if (inPolygon) {
+                            println("line ${line[i].first.y} emitting $prevX to $leftBoundaryX")
+                            yield(Pair(prevX, leftBoundaryX))
+                        }
+                    }
+                    prevX = rightBoundaryX
+                    println("inPolygon = $inPolygon")
+                    ++i
+                    continue
+                }
+            }
+        }
+    }
+}
+
+fun polygonArea(polygon: List<Pair<Point, PointType>>, grid: Grid): Long {
+    val lines =
+        polygon.groupBy { it.first.y }.values.map { it.sortedBy { pair -> pair.first.x } }
+    return lines.sumOf { it -> innerStrides(it).sumOf { it.second - it.first - 1 } }.toLong()
 }
 
 fun part2(input: List<String>): Long {
-    return input.size.toLong()
+    val grid = Grid(input)
+    val path = Direction.entries.asSequence().map { pathToStartingPoint(grid, grid.startingPoint, it, listOf()) }
+        .filterNotNull().first()
+    val startingPoint = path.last()
+    val afterStartPoint = path.first()
+    val preStartPoint = path[path.size - 2]
+    val deltas = Pair(
+        Point(afterStartPoint.x - startingPoint.x, afterStartPoint.y - startingPoint.y),
+        Point(startingPoint.x - preStartPoint.x, startingPoint.y - preStartPoint.y)
+    )
+    val startingPointType = when (deltas) {
+        Pair(Point(0, 1), Point(0, -1)), Pair(Point(0, -1), Point(0, 1)) -> PointType.UD
+        Pair(Point(-1, 0), Point(1, 0)), Pair(Point(1, 0), Point(-1, 0)) -> PointType.LR
+        Pair(Point(-1, 0), Point(0, -1)), Pair(Point(0, 1), Point(1, 0)) -> PointType.LD
+        Pair(Point(1, 0), Point(0, 1)), Pair(Point(0, -1), Point(-1, 0)) -> PointType.UR
+        Pair(Point(-1, 0), Point(0, 1)), Pair(Point(0, -1), Point(1, 0)) -> PointType.UL
+        Pair(Point(1, 0), Point(0, -1)), Pair(Point(0, 1), Point(-1, 0)) -> PointType.DR
+        else -> PointType.Ground
+    }
+    val pathWithTypes = sequence {
+        yieldAll(path.dropLast(1).map { Pair(it, grid.get(it)) })
+        yield(Pair(path.last(), startingPointType))
+    }.toList()
+    return polygonArea(pathWithTypes, grid)
 }
 
 fun main() {
