@@ -82,7 +82,7 @@ data class Grid(val field: List<String>) {
 
 }
 
-tailrec fun stepsToStartingPoint(grid: Grid, point: Point, direction: Direction, stepsDone: Int): Int? {
+tailrec fun pathToStartingPoint(grid: Grid, point: Point, direction: Direction, path: List<Point>): List<Point>? {
     val newPoint = when (direction) {
         Direction.Left -> Point(point.x - 1, point.y)
         Direction.Up -> Point(point.x, point.y - 1)
@@ -95,17 +95,17 @@ tailrec fun stepsToStartingPoint(grid: Grid, point: Point, direction: Direction,
         return null
     }
     if (newPointType == PointType.StartingPosition) {
-        return stepsDone + 1
+        return path + newPoint
     }
     val newDirection = Direction.entries.filterNot { it == complementaryDirection(direction) }.firstOrNull { compatibleOrigins[it]!!.contains(grid.get(newPoint))}
         ?: return null
-    return stepsToStartingPoint(grid, newPoint, newDirection, stepsDone + 1)
+    return pathToStartingPoint(grid, newPoint, newDirection, path + newPoint)
 }
 
 
 fun part1(input: List<String>): Long {
     val grid = Grid(input)
-    return Direction.entries.asSequence().map { stepsToStartingPoint(grid, grid.startingPoint, it, 0) }.filterNotNull().first().toLong() / 2
+    return Direction.entries.asSequence().map { pathToStartingPoint(grid, grid.startingPoint, it, listOf()) }.filterNotNull().first().count().toLong() / 2
 }
 
 fun part2(input: List<String>): Long {
