@@ -118,57 +118,30 @@ fun innerStrides(line: List<Pair<Point, PointType>>): Sequence<Pair<Int, Int>> {
         while (i < line.size) {
             val leftBoundaryType = line[i].second
             val leftBoundaryX = line[i].first.x
-            if (leftBoundaryType == PointType.UD) {
-
-                if (prevX != null) {
-                    if (inPolygon) {
-                        println("line ${line[i].first.y} emitting $prevX to $leftBoundaryX")
-                        yield(Pair(prevX, leftBoundaryX))
-                    }
-                }
-                prevX = leftBoundaryX
-                inPolygon = !inPolygon
-                println("inPolygon = $inPolygon")
-                ++i
-                continue
-
+            if (leftBoundaryType != PointType.UD) {
+                //skipping over
+                while (line[++i].second == PointType.LR) continue
             }
-            //skipping over
-            while (line[++i].second == PointType.LR) continue
             val rightBoundaryType = line[i].second
             val rightBoundaryX = line[i].first.x
-            when (Pair(leftBoundaryType, rightBoundaryType)) {
-                Pair(PointType.UR, PointType.LD), Pair(PointType.DR, PointType.UL) -> {
-                    if (prevX != null) {
-                        if (inPolygon) {
-                            println("line ${line[i].first.y} emitting $prevX to $leftBoundaryX")
-                            yield(Pair(prevX, leftBoundaryX))
-                        }
-                    }
-                    prevX = rightBoundaryX
-                    inPolygon = !inPolygon
-                    println("inPolygon = $inPolygon")
-                    ++i
-                    continue
-                }
-                else -> {
-                    if (prevX != null) {
-                        if (inPolygon) {
-                            println("line ${line[i].first.y} emitting $prevX to $leftBoundaryX")
-                            yield(Pair(prevX, leftBoundaryX))
-                        }
-                    }
-                    prevX = rightBoundaryX
-                    println("inPolygon = $inPolygon")
-                    ++i
-                    continue
-                }
+            if (prevX != null && inPolygon) {
+                yield(Pair(prevX, leftBoundaryX))
             }
+            prevX = rightBoundaryX
+            inPolygon = when (Pair(leftBoundaryType, rightBoundaryType)) {
+                Pair(PointType.UD, PointType.UD), Pair(PointType.UR, PointType.LD), Pair(
+                    PointType.DR,
+                    PointType.UL
+                ) -> !inPolygon
+
+                else -> inPolygon
+            }
+            ++i
         }
     }
 }
 
-fun polygonArea(polygon: List<Pair<Point, PointType>>, grid: Grid): Long {
+fun polygonArea(polygon: List<Pair<Point, PointType>>): Long {
     val lines =
         polygon.groupBy { it.first.y }.values.map { it.sortedBy { pair -> pair.first.x } }
     return lines.sumOf { it -> innerStrides(it).sumOf { it.second - it.first - 1 } }.toLong()
@@ -198,7 +171,7 @@ fun part2(input: List<String>): Long {
         yieldAll(path.dropLast(1).map { Pair(it, grid.get(it)) })
         yield(Pair(path.last(), startingPointType))
     }.toList()
-    return polygonArea(pathWithTypes, grid)
+    return polygonArea(pathWithTypes)
 }
 
 fun main() {
