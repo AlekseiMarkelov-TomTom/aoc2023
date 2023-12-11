@@ -39,14 +39,10 @@ fun parseInput(input: List<String>, expansionFactor: Int = 2): Universe {
 }
 
 fun starPairs(universe: Universe): Sequence<Pair<Point, Point>> {
-    return sequence {
-        val expandedStars = universe.expandedStars()
-        for (star1 in expandedStars.dropLast(1).asSequence().withIndex()) {
-            for (star2 in expandedStars.drop(star1.index + 1)) {
-                yield(Pair(star1.value, star2))
-            }
-        }
-    }
+    val expandedStars = universe.expandedStars()
+    return expandedStars.dropLast(1).asSequence().withIndex()
+        .flatMap { star1 -> expandedStars.asSequence().drop(star1.index + 1).map { Pair(star1.value, it) } }
+
 }
 
 fun distance(p1: Point, p2: Point): Long {
@@ -56,9 +52,7 @@ fun distance(p1: Point, p2: Point): Long {
 fun part1(input: List<String>): Long {
     val universe = parseInput(input)
     return starPairs(universe).sumOf { (p1, p2) ->
-        val d = distance(p1, p2)
-        println("[${p1.x},${p1.y}]x[${p2.x},${p2.y}]${d}")
-        d
+        distance(p1, p2)
     }
 
 }
