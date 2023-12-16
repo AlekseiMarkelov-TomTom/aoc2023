@@ -49,9 +49,13 @@ fun nextPoint(point: Point, direction: Direction): Point {
 
 fun part1(input: List<String>): Long {
     val grid = Grid(input)
+    return numberOfEnergizedTileFromPoint(grid, Label(Point(0, 0), Direction.Right))
+}
+
+private fun numberOfEnergizedTileFromPoint(grid: Grid, startingLabel: Label): Long {
     val exploredTiles = ExploredTiles(Array(grid.ysize) { Array(grid.xsize) { mutableSetOf() } })
     val queue = ArrayDeque<Label>()
-    queue.addLast(Label(Point(0, 0), Direction.Right))
+    queue.addLast(startingLabel)
 
     while (queue.isNotEmpty()) {
         val label = queue.removeFirst()
@@ -72,12 +76,14 @@ fun part1(input: List<String>): Long {
                         label.direction
                     )
                 )
+
                 Direction.Left, Direction.Right -> {
                     queue.add(Label(nextPoint(label.point, Direction.Up), Direction.Up))
                     queue.add(Label(nextPoint(label.point, Direction.Down), Direction.Down))
                 }
 
             }
+
             '-' -> when (label.direction) {
                 Direction.Left, Direction.Right -> queue.add(
                     Label(
@@ -85,6 +91,7 @@ fun part1(input: List<String>): Long {
                         label.direction
                     )
                 )
+
                 Direction.Up, Direction.Down -> {
                     queue.add(Label(nextPoint(label.point, Direction.Left), Direction.Left))
                     queue.add(Label(nextPoint(label.point, Direction.Right), Direction.Right))
@@ -118,7 +125,12 @@ fun part1(input: List<String>): Long {
 }
 
 fun part2(input: List<String>): Long {
-    return input.size.toLong()
+    val grid = Grid(input)
+    val top = (0 until grid.xsize).maxOf { numberOfEnergizedTileFromPoint(grid, Label(Point(it, 0), Direction.Down))}
+    val bottom = (0 until grid.xsize).maxOf { numberOfEnergizedTileFromPoint(grid, Label(Point(it, grid.ysize -1), Direction.Up))}
+    val left = (0 until grid.ysize).maxOf { numberOfEnergizedTileFromPoint(grid, Label(Point(0, it), Direction.Right))}
+    val right = (0 until grid.ysize).maxOf { numberOfEnergizedTileFromPoint(grid, Label(Point(grid.xsize - 1, it), Direction.Left))}
+    return maxOf(top, bottom, left, right)
 }
 
 fun main() {
