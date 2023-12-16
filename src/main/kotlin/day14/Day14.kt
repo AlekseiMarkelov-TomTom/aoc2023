@@ -37,15 +37,93 @@ fun tiltNorth(platform: Platform): Platform {
 }
 
 fun tiltWest(platform: Platform): Platform {
-    return platform
+    val newData = platform.data.map { platformLine ->
+        var newLine = mutableListOf<Char>()
+        var insertionIndex = 0
+        for (current in platformLine.withIndex()) {
+            when (current.value) {
+                'O' -> {
+                    newLine.add('O')
+                    insertionIndex++
+                }
+                '.' -> {
+                    /*Do nothing for now, we'll fill gaps at the end or on # */
+                }
+                '#' -> {
+                    while (insertionIndex < current.index) {
+                        newLine.add('.')
+                        insertionIndex++
+                    }
+                    newLine.add('#')
+                    insertionIndex++
+                }
+            }
+        }
+        while (newLine.size < platform.xsize) {
+            newLine.add('.')
+        }
+        newLine
+    }
+    return Platform(newData.toList())
 }
 
 fun tiltSouth(platform: Platform): Platform {
-    return platform
+    val newData = Array(platform.ysize) { mutableListOf<Char>() }
+    for (x in 0 until platform.xsize) {
+        var insertionIndex = platform.ysize - 1
+        for (currentIndex in platform.ysize - 1 downTo  0) {
+            when (platform.data[currentIndex][x]) {
+                'O' -> {
+                    newData[insertionIndex].add('O')
+                    insertionIndex--
+                }
+                '.' -> {
+                    /*Do nothing for now, we'll fill gaps at the end or on # */
+                }
+                '#' -> {
+                    while (insertionIndex > currentIndex) {
+                        newData[insertionIndex--].add('.')
+                    }
+                    newData[insertionIndex--].add('#')
+                }
+            }
+        }
+        while (insertionIndex >= 0) {
+            newData[insertionIndex--].add('.')
+        }
+    }
+    return Platform(newData.toList())
 }
 
 fun tiltEast(platform: Platform): Platform {
-    return platform
+    val newData = platform.data.map { it.reversed() } .map { platformLine ->
+        var newLine = mutableListOf<Char>()
+        var insertionIndex = 0
+        for (current in platformLine.withIndex()) {
+            when (current.value) {
+                'O' -> {
+                    newLine.add('O')
+                    insertionIndex++
+                }
+                '.' -> {
+                    /*Do nothing for now, we'll fill gaps at the end or on # */
+                }
+                '#' -> {
+                    while (insertionIndex < current.index) {
+                        newLine.add('.')
+                        insertionIndex++
+                    }
+                    newLine.add('#')
+                    insertionIndex++
+                }
+            }
+        }
+        while (newLine.size < platform.xsize) {
+            newLine.add('.')
+        }
+        newLine.reversed()
+    }
+    return Platform(newData.toList())
 }
 
 fun spin(platform: Platform): Platform {
@@ -92,12 +170,12 @@ fun part2(input: List<String>): Long {
         val index = cache.getOrPut(platform) { i }
         if (index != i) {
             val cycleSize = i - index
-            cycleSize.println()
+            val finalIndex = (cycleCount - i) % cycleSize + index
+            return load(cache.entries.first { it.value == finalIndex }.key).toLong()
             /*cycle stabilized around index to i*/
-            break
         }
     }
-    return 0
+    return load(platform).toLong()
 }
 
 fun main() {
