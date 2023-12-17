@@ -61,6 +61,7 @@ fun part1(input: List<String>): Long {
 }
 
 fun part2(input: List<String>): Long {
+    return input.size.toLong()
     return input.map { parseLine(it) }.map { unfold(it) }.sumOf { arrangements(it) }
 }
 
