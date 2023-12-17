@@ -53,6 +53,28 @@ fun nextLabel(label: Label, grid: Grid, direction: Direction): Label? {
     return Label(label.totalThermalLoss + grid.data[y][x], x, y, direction, straightSteps)
 }
 
+fun nextLabelPart2(label: Label, grid: Grid, direction: Direction): Label? {
+    val straightSteps = if (label.direction == direction) label.straightSteps + 1 else 1
+    if (label.straightSteps < 4 && direction != label.direction) {
+        return null
+    }
+    val x = when (direction) {
+        Direction.Left -> label.x - 1
+        Direction.Right -> label.x + 1
+        Direction.Up, Direction.Down -> label.x
+    }
+    val y = when (direction) {
+        Direction.Up -> label.y - 1
+        Direction.Down -> label.y + 1
+        Direction.Left, Direction.Right -> label.y
+    }
+    if (x !in 0 until grid.xsize || y !in 0 until grid.ysize || straightSteps > 10) {
+        return null
+    }
+    return Label(label.totalThermalLoss + grid.data[y][x], x, y, direction, straightSteps)
+}
+
+
 data class LabelKey(val x: Int, val y: Int, val direction: Direction, val straightSteps: Int)
 
 fun part1(input: List<String>): Long {
@@ -62,7 +84,6 @@ fun part1(input: List<String>): Long {
     val visitedTiles = mutableMapOf<LabelKey, Int>()
     while (queue.isNotEmpty()) {
         val currentLabel = queue.remove()
-        queue.size.println()
         if (currentLabel.x == grid.xsize - 1 && currentLabel.y == grid.ysize - 1) {
             return currentLabel.totalThermalLoss.toLong()
         }
@@ -82,7 +103,28 @@ fun part1(input: List<String>): Long {
 }
 
 fun part2(input: List<String>): Long {
-    return input.size.toLong()
+    val queue = PriorityQueue<Label>()
+    val grid = parseInput(input)
+    queue.add(Label(0, 0, 0, Direction.Right, 0))
+    val visitedTiles = mutableMapOf<LabelKey, Int>()
+    while (queue.isNotEmpty()) {
+        val currentLabel = queue.remove()
+        if (currentLabel.x == grid.xsize - 1 && currentLabel.y == grid.ysize - 1 && currentLabel.straightSteps >= 4) {
+            return currentLabel.totalThermalLoss.toLong()
+        }
+        queue.addAll(Direction.values().filterNot { it == opposite(currentLabel.direction) }
+            .mapNotNull { nextLabelPart2(currentLabel, grid, it) }.filter {
+                val key = LabelKey(it.x, it.y, it.direction, it.straightSteps)
+                val visitedThermalLoss = visitedTiles[key]
+                if (visitedThermalLoss != null && visitedThermalLoss <= it.totalThermalLoss) {
+                    false
+                } else {
+                    visitedTiles[key] = it.totalThermalLoss
+                    true
+                }
+            })
+    }
+    return -1
 }
 
 fun main() {

@@ -18,7 +18,7 @@ class Day17Test {
 
     @ParameterizedTest
     @CsvSource(
-        "Day17_test, 94", "Day17_test2, 71", "Day17, 0"
+        "Day17_test, 94", "Day17_test2, 71", "Day17, 1347"
     )
     fun testPart2(inputFileName: String, expectedResult: Long) {
         Assertions.assertEquals(expectedResult, part2(readInput(inputFileName)))
